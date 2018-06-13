@@ -23,6 +23,7 @@ boolean leitura = false;
 #define NUM_SENSORES   8      // numero de sensores usados
 #define TIMEOUT        2500   // 2500 microseconds para saida ir para LOW
 #define IF_EMISSOR     2      // Pino para controlar o emissor
+#define led            4
 
 QTRSensorsRC qtrrc((unsigned char[]) {5, 6, 7, 8, 9, 10, 11, 12},
                     NUM_SENSORES, TIMEOUT, IF_EMISSOR); 
@@ -36,7 +37,7 @@ void setup()
   Wire.onReceive(receiveData);      // Funcao executada quando chega dado do mestre
   Wire.onRequest(sendData);         // Funcao executada para responder ao mestre
   Serial.println("");
-  pinMode(13, OUTPUT);              // Pino 13 (LED) para testes
+  pinMode(led, OUTPUT);              // Pino 13 (LED) para testes
   calibrar();
 }
 
@@ -51,7 +52,7 @@ void calibrar()
     if (contador % 10 == 0 ) 
     {
       estado = !estado;
-      digitalWrite(13, estado);
+      digitalWrite(led, estado);
       Serial.println(estado);
     }
     contador++;
@@ -77,11 +78,11 @@ void receiveData(int byteCount)
     }
     else if ( leitura == 2 )
     {
-      digitalWrite(13, HIGH);
+      digitalWrite(led, HIGH);
     }
     else if (leitura == 3 )
     {
-      digitalWrite(13, LOW);
+      digitalWrite(led, LOW);
     }
     else if ( leitura == 4 )
     {
@@ -89,7 +90,7 @@ void receiveData(int byteCount)
     }
     else
     {
-      digitalWrite(13, LOW);
+      digitalWrite(led, LOW);
     }  
   }
 }
@@ -98,6 +99,7 @@ void sendData()
 {
   for (int i=0; i<NUM_SENSORES; i++)
   {
+    unsigned char retorno = (unsigned char) (valorSensores[i]/4);
     Wire.write(valorSensores[i]);
   }
 }
