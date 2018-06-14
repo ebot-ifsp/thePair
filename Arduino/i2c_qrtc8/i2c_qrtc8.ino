@@ -29,10 +29,13 @@ QTRSensorsRC qtrrc((unsigned char[]) {
 
 unsigned int valorSensores[NUM_SENSORES];     // Vetor para guardar o resultado das leituras
 unsigned int valorRawSensores[NUM_SENSORES];  // Vetor para guardar o resultado das leituras
+char data[8];
+int posicao;
 
-#define DEBUG true
-int debug_print = 0; 
-                         
+#define DEBUG false
+int debug_print = 0;
+int teste = 0;
+
 
 void setup()
 {
@@ -48,11 +51,13 @@ void setup()
 void loop()
 {
   delay(10);
-  qtrrc.readLine(valorSensores);
-
+  posicao = qtrrc.readLine(valorSensores);
+  for (int i=0; i<8; i++)
+  {
+    data[i] = valorSensores[i]/5; 
+  }
   if (DEBUG)
   {
-    //qtrrc.read(valorRawSensores);
     if ( debug_print % 100 == 0 )
     {
       Serial.print(" 8bit: " );
@@ -71,15 +76,6 @@ void loop()
       }
       Serial.println();
       Serial.println();
-      //    Serial.print(" RAW: " );
-      //    for (int i = 0; i < NUM_SENSORES; i++)
-      //    {
-      //      unsigned char retorno = (unsigned char) (valorRawSensores[i] / 4);
-      //      Serial.print(retorno);
-      //      Serial.print(" - " );
-      //    }
-      //    Serial.println();
-      //    Serial.println();
     }
     debug_print++;
   }
@@ -90,7 +86,7 @@ void calibrar()
   boolean estado = false;
   int contador = 0;
   Serial.println("Calibrando");
-  for (int i = 0; i < 100; i++)  // make the calibration take about 10 seconds
+  for (int i = 0; i < 400; i++)  // make the calibration take about 10 seconds
   {
     qtrrc.calibrate();            // reads all sensors 10 times at 2500 us per read (i.e. ~25 ms per call)
     if (contador % 10 == 0 )
@@ -135,10 +131,13 @@ void receiveData(int byteCount)
 
 void sendData()
 {
-  for (int i = 0; i < NUM_SENSORES; i++)
-  {
-    unsigned char retorno = (unsigned char) (valorSensores[i] / 4);
-    Wire.write(retorno);
-  }
+  Wire.write(data, 8);
 }
+
+
+
+
+
+
+
 

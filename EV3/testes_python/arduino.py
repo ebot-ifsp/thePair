@@ -17,7 +17,6 @@ class Arduino():
         self.pedido = 1
         self.led_on = 2
         self.led_off = 3
-        self.codigo_calibrar = 4
         self.tamanho = 8
         self.buss = SMBus(self.canal)
 
@@ -39,6 +38,4 @@ class Arduino():
                     self.address, self.led_off, self.tamanho)
 
     def calibrar(self):
-        resposta = self.buss.read_i2c_block_data(
-                    self.address, self.codigo_calibrar, self.tamanho)
-
+        self.buss.read_i2c_block_data(self.address, 4, self.tamanho)
