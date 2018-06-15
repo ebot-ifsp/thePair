@@ -7,6 +7,7 @@ http://wiki.erazor-zone.de/wiki:linux:python:smbus:doc
 '''
 
 import sys, os
+import numpy as np
 
 from smbus import SMBus
 
@@ -38,4 +39,8 @@ class Arduino():
                     self.address, self.led_off, self.tamanho)
 
     def calibrar(self):
-        self.buss.read_i2c_block_data(self.address, 4, self.tamanho)
+        self.buss.read_i2c_block_data(self.address, 4, self.tamanho) 
+
+    def sensores(self):
+        array = np.array(self.le_todos())>40 
+        return array
