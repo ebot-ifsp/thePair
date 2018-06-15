@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: latin-1 -*-
 import ev3dev.ev3 as ev3
 from controle import *
 from arduino import *
@@ -15,16 +17,12 @@ while 1:
 		voltar()
 	elif sensores.count(True) == 4: # cor para virar - descobrir para onde
 		pass # implementar
+	elif sensores.count(True) == 0:
+		pass # parar() # implementar
 	elif sensores.count(True) < 4 and  sensores.count(True) > 0:
 		estado = segue_linha(sensores,estado)
-	elif sensores.count(True) == 0:
-		parar()
-		#pass # implementar -> andar fora da linha 
-
-
-
-
-
+	
+	# implementar -> andar fora da linha 
 
 
 
@@ -89,9 +87,6 @@ class Navegador():
 			self.esquerda()
 		if(a.le(4)>128):
 			self.direita()
-'''
-
-'''
 		for i in range(0,10):
 			self.esquerda()
 			time.sleep(0.1)
