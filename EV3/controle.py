@@ -14,22 +14,22 @@ def sensoresDireita(s):
     return s[5] or s[6]
 
 def voltar(ard):
-    gira_angulo(120)
-    gira('direita')
+    gira_angulo(volta_gira)
+    gira(volta_lado)
     sensores = ard.sensores()
     while not sensoresMeio(sensores):
         sensores = ard.sensores()
         time.sleep(0.01)
     estado = 1
-    anda_posicao(50)
+    anda(v_reta, 0)
 
 def curvaVerde(direcao,ard):
-    anda_posicao(70)
+    anda_posicao(curvaverde_anda)
     if direcao == 'esquerda':
-        gira_angulo(-60)
+        gira_angulo(-curvaverde_gira)
         gira('esquerda')
     else:
-        gira_angulo(60)
+        gira_angulo(curvaverde_gira)
         gira('direita')
     sensores = ard.sensores()
     while not sensoresMeio(sensores):
@@ -37,6 +37,7 @@ def curvaVerde(direcao,ard):
         time.sleep(0.01)
     estado = 1
     anda(v_reta, 0)
+    time.sleep(0.5)
 
 def segue_linha(sensores,estado):
     if estado == 1:
@@ -64,9 +65,9 @@ def segue_linha(sensores,estado):
 
 def desvia_bloco():
     gira_angulo(90)
-    anda_posicao(250)
+    anda_posicao(bloco_anda1)
     gira_angulo(-90)
-    anda_posicao(450)
+    anda_posicao(bloco_anda2)
     gira_angulo(-90)
-    anda_posicao(250)
+    anda_posicao(bloco_anda3)
     gira_angulo(90)

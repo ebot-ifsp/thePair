@@ -8,7 +8,7 @@ http://wiki.erazor-zone.de/wiki:linux:python:smbus:doc
 
 import sys, os
 import numpy as np
-
+from movimento import limiar_if
 from smbus import SMBus
 
 class Arduino():
@@ -20,7 +20,7 @@ class Arduino():
         self.led_off = 3
         self.tamanho = 8
         self.buss = SMBus(self.canal)
-        self.limiar = 50                
+        self.limiar = limiar_if                
 
     def le_todos(self):
         resposta =  self.buss.read_i2c_block_data(

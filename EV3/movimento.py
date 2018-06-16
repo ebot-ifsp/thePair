@@ -2,21 +2,44 @@
 # -*- coding: latin-1 -*-
 import ev3dev.ev3 as ev3
 import math, time
+import configparser
+
+cfg = configparser.ConfigParser()
+cfg.read('config.cfg')
 
 diametro_roda = 30.0                   # raio da roda do robo (mm)
 taco_mm = math.pi*diametro_roda/360.0  # distancia percorrida em um taco (1 grau)
-fator_correcao_linear = 1.1            # correcao
 
-v_reta = 200
-v_gira = 150
+sequencia = eval(cfg.get('ninja', 'sequencia'))
 
-m_esq = ev3.LargeMotor('outC')						# motorA (lado esquerdo)
-m_dir = ev3.LargeMotor('outB')						# motorB (lado direito)
+fator_correcao_linear = float(cfg.get('velocidades', 'fator_correcao_linear'))
+v_reta = int(cfg.get('velocidades', 'v_reta'))
+v_gira = int(cfg.get('velocidades', 'v_reta'))
 
-gyro = ev3.GyroSensor('in2')						# giroscopio no in1
+limiar_if = int(cfg.get('sensor_linha', 'limiar_if'))
+
+minimo_if = int(cfg.get('bloco', 'minimo_if'))
+bloco_anda1 = int(cfg.get('bloco', 'bloco_anda1'))
+bloco_anda2 = int(cfg.get('bloco', 'bloco_anda2'))
+bloco_anda3 = int(cfg.get('bloco', 'bloco_anda3'))
+
+curvaverde_anda = int(cfg.get('curvaVerde', 'curvaverde_anda'))
+curvaverde_gira = int(cfg.get('curvaVerde', 'curvaverde_gira'))
+volta_gira = int(cfg.get('curvaVerde', 'volta_gira'))
+volta_lado = cfg.get('curvaVerde', 'volta_lado')
+
+pino_motor_esquerda = cfg.get('pinos', 'pino_motor_esquerda')
+pino_motor_direita = cfg.get('pinos', 'pino_motor_direita')
+pino_gyro = cfg.get('pinos', 'pino_gyro')
+pino_if = cfg.get('pinos', 'pino_if')
+
+m_esq = ev3.LargeMotor(pino_motor_esquerda)					
+m_dir = ev3.LargeMotor(pino_motor_direita)					
+
+gyro = ev3.GyroSensor(pino_gyro)						# giroscopio no in1
 gyro.mode='GYRO-ANG'
 
-ir = ev3.InfraredSensor('in1') 
+ir = ev3.InfraredSensor(pino_if)
 ir.mode = 'IR-PROX'
 
 def anda(velocidade, direcao):

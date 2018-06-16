@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: latin-1 -*-
 import ev3dev.ev3 as ev3
-from controle import *
-from arduino import *
 import numpy as np
 import time
+from movimento import *
+from controle import *
+from arduino import *
 
 ard = Arduino()
 estado = 1
