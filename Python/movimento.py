@@ -10,8 +10,7 @@ cfg.read('config.cfg')
 diametro_roda = 30.0                   # raio da roda do robo (mm)
 taco_mm = math.pi*diametro_roda/360.0  # distancia percorrida em um taco (1 grau)
 
-sequencia = eval(cfg.get('ninja', 'sequencia'))
-
+gambiarra_angulo = float(cfg.get('velocidades', 'gambiarra_angulo'))
 fator_correcao_linear = float(cfg.get('velocidades', 'fator_correcao_linear'))
 v_reta = int(cfg.get('velocidades', 'v_reta'))
 v_gira = int(cfg.get('velocidades', 'v_reta'))
@@ -30,14 +29,14 @@ volta_lado = cfg.get('curvaVerde', 'volta_lado')
 
 pino_motor_esquerda = cfg.get('pinos', 'pino_motor_esquerda')
 pino_motor_direita = cfg.get('pinos', 'pino_motor_direita')
-pino_gyro = cfg.get('pinos', 'pino_gyro')
+# pino_gyro = cfg.get('pinos', 'pino_gyro')
 pino_if = cfg.get('pinos', 'pino_if')
 
 m_esq = ev3.LargeMotor(pino_motor_esquerda)					
 m_dir = ev3.LargeMotor(pino_motor_direita)					
 
-gyro = ev3.GyroSensor(pino_gyro)
-gyro.mode='GYRO-ANG'
+# gyro = ev3.GyroSensor(pino_gyro)
+# gyro.mode='GYRO-ANG'
 
 ir = ev3.InfraredSensor(pino_if)
 ir.mode = 'IR-PROX'
@@ -55,30 +54,21 @@ def anda(velocidade, direcao):
     m_esq.run_forever(speed_sp=speed_sp_esq)
     m_dir.run_forever(speed_sp=speed_sp_dir)
 
-def anda_posicao(distancia, velocidade=150, block=True):
-    n_taco = (distancia/taco_mm)*fator_correcao_linear
+def anda_posicao(distancia, fator_correcao_linear2, velocidade=150, block=True):
+    n_taco = (distancia/taco_mm)*fator_correcao_linear2
     m_esq.run_to_rel_pos(position_sp=n_taco, speed_sp=velocidade, stop_action="brake")
     m_dir.run_to_rel_pos(position_sp=n_taco, speed_sp=velocidade, stop_action="brake")
     if block:
         hold_on()
     
 def gira_angulo(angulo, block=True):
-    gambiarra = 50
-    n_taco = angulo * gambiarra
-    if angulo > 0:
-        m_esq.run_to_rel_pos(position_sp=n_taco,
-                             speed_sp=100, 
-                             stop_action="brake")
-        m_dir.run_to_rel_pos(position_sp=-1*n_taco,
-                             speed_sp=-100, 
-                             stop_action="brake")
-    elif angulo < 0:
-        m_esq.run_to_rel_pos(position_sp=-1*n_taco,
-                             speed_sp=100,
-                             stop_action="brake")
-        m_dir.run_to_rel_pos(position_sp=n_taco,
-                             speed_sp=-100,
-                             stop_action="brake") 
+    n_taco = angulo * gambiarra_angulo
+    m_esq.run_to_rel_pos(position_sp=n_taco,
+                         speed_sp=100, 
+                         stop_action="brake")
+    m_dir.run_to_rel_pos(position_sp=-1*n_taco,
+                         speed_sp=-100, 
+                         stop_action="brake")
     if block:
         hold_on()
 
