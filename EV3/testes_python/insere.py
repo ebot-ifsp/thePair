@@ -25,12 +25,12 @@ def pisca_led():
 
 def left(state):
     if state:
-        decisoes.append('esq')
+        decisoes.append('left')
         pisca_led()
 
 def right(state):  # neater use of 'if' follows:
     if state:
-        decisoes.append('dir')
+        decisoes.append('right')
         pisca_led()
 
 def up(state):
@@ -70,3 +70,5 @@ Leds.set_color(Leds.LEFT, Leds.RED)
 while not sair:
     btn.process()
     time.sleep(0.01)
+
+
