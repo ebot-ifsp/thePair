@@ -1,57 +1,73 @@
 #!/usr/bin/env python3
 # -*- coding: latin-1 -*-
 import ev3dev.ev3 as ev3
-import numpy as np
 import time
 from movimento import *
-from controle import *
 from arduino import *
-
 ard = Arduino()
-estado = 1
+from controle import *
 
-while 1:
-    if ir.value() < 25:                     # caso chegue no obstaculo
-        desvia_bloco()
-    sensores = ard.sensores()
-    qt_preto = np.count_nonzero(sensores)
-    if qt_preto == 0 or qt_preto == 8:      # tudo branco (sem linha) ou encruzilhada
-        if qt_preto == 8:
-            print('8')
-        anda(v_reta + 200, 0)
-    elif qt_preto > 3:                      # encruzilhada ou virada (verde)
-        print('>3 antes', qt_preto)
-        parar()
-        anda_posicao(5, velocidade=50)
+estado = 1
+btn = ev3.Button()
+
+while not btn.any():                                    # esperando botao para
+    ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.ORANGE)  # iniciar
+    ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.ORANGE)
+    time.sleep(0.05)
+time.sleep(1)
+ev3.Leds.set_color(ev3.Leds.LEFT, ev3.Leds.GREEN)       # ready go
+ev3.Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.GREEN)      # go go go
+
+def change(bt):
+    print('change')
+    bt_pressionado = True
+    time.sleep(1)
+
+try:
+    while not btn.any():
+        #verifica se tem obstaculo para desviar
+        if ir.value() < minimo_if:                     # caso chegue no obstaculo
+            print('devia bloco')
+            desvia_bloco()
+        # verificar se alguma linha verde foi encotrada
+        #
+        #
         sensores = ard.sensores()
-        qt_preto = np.count_nonzero(sensores)
-        if qt_preto == 4 or qt_preto == 5:                     # cor para virar - descobrir para onde
-            print("4", qt_preto)
-            if sensoresEsquerda(sensores):
-                print('curva esquerda')
-                curvaVerde('esquerda', ard)
-                estado=1
-            elif sensoresDireita(sensores):
-                print('curva direita')
-                curvaVerde('direita', ard)
-                estado=2
-            else:
-                print('Arrumar !')
+        qt_preto = ard.quantidade(sensores)
+        if qt_preto > 0 and qt_preto < 3:               # linha normal
             estado = segue_linha(sensores, estado)
-        elif qt_preto == 6 or qt_preto == 7:                     # fim de curso - Voltar
-            print("6-7", qt_preto)
-            gira_angulo(120)
-            gira('direita')
-            sensores = ard.sensores()
-            while not sensoresMeio(sensores):
-                sensores = ard.sensores()
-                time.sleep(0.01)
+            print(estado, 'maquina estado')
+        elif qt_preto == 0:                             # sem linha
+            anda(v_reta, 0)
             estado = 1
-        elif qt_preto == 8:
-            anda(v_reta + 200, 0)
+            print(qt_preto, 'reta')
+        elif qt_preto > 6:                              # encruzilhada
+            print(qt_preto, 'cruzamento')
+            parar()
+            time.sleep(0.1)
+            gira_angulo(90)                             # gira 90 graus
+            time.sleep(0.1)
+            gira('direita', v_gira/2)                   # continua girando
+            while not sensoresMeio(ard.sensores()):     # ate linha chegar nomeio do
+                time.sleep(0.1)                         # sensor
+            parar()
+            estado = 1
+        elif qt_preto > 3:                              # virar 90 graus
+            print(sensores)
+            if sensoresDireita(sensores) and sensoresEsquerda(sensores):
+                print('esquerda e direita')
+            elif sensoresDireita(sensores):
+                print('Direita')
+                curva_alinhar('direita')                        # sensor
+            elif sensoresEsquerda(sensores):
+                print('Esquerda')
+                curva_alinhar('esquerda')
         else:
-            estado = segue_linha(sensores, estado)
-    elif qt_preto < 4 and  qt_preto > 0:
-        estado = segue_linha(sensores, estado)
-    else:
-        anda(v_reta, 0)
+            print('else', sensores, qt_preto)
+    parar()
+    time.sleep(1)
+
+except Exception as e:
+    parar()
+    print('except', e)
+    time.sleep(1)

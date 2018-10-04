@@ -54,8 +54,8 @@ def anda(velocidade, direcao):
     m_esq.run_forever(speed_sp=speed_sp_esq)
     m_dir.run_forever(speed_sp=speed_sp_dir)
 
-def anda_posicao(distancia, fator_correcao_linear2, velocidade=150, block=True):
-    n_taco = (distancia/taco_mm)*fator_correcao_linear2
+def anda_posicao(distancia, velocidade=150, block=True):
+    n_taco = (distancia/taco_mm)*fator_correcao_linear
     m_esq.run_to_rel_pos(position_sp=n_taco, speed_sp=velocidade, stop_action="brake")
     m_dir.run_to_rel_pos(position_sp=n_taco, speed_sp=velocidade, stop_action="brake")
     if block:
