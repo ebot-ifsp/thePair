@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: latin-1 -*-
 
+# informacoes para usar o lcd
+# If running from SSH, first run sudo chvt 6
+# If running from SSH, run sudo chvt 1 after program terminates
+
 import time
 from ev3dev.ev3 import Leds
+from ev3dev.ev3 import Screen
 from movimento import *
 from sensores import *
 from controle import *
@@ -25,9 +30,16 @@ btn.on_left = left
 btn.on_right = right
 bt_sair = False
 
+lcd = Screen()
+mystring = 'Pressione para iniciar:'
+
 if __name__ == '__main__':
     while True:
-        Leds.set_color(ev3.Leds.LEFT, ev3.Leds.RED)  # iniciar
+        lcd.clear()
+        size = lcd.draw.textsize(mystring)
+        lcd.draw.text((89-size[0]/2, 59), mystring)
+        lcd.update()
+        Leds.set_color(ev3.Leds.LEFT, ev3.Leds.RED) 
         Leds.set_color(ev3.Leds.RIGHT, ev3.Leds.RED)
         print('aguardando bt para iniciar')
         while not btn.any():         
