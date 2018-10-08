@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: latin-1 -*-
 import ev3dev.ev3 as ev3
+from ev3dev.ev3 import Button
 import math, time
 import configparser
 
@@ -32,7 +33,6 @@ pino_motor_direita = cfg.get('pinos', 'pino_motor_direita')
 pino_if = cfg.get('pinos', 'pino_if')
 pino_corE = cfg.get('pinos', 'pino_corE')
 pino_corD = cfg.get('pinos', 'pino_corD')
-# pino_gyro = cfg.get('pinos', 'pino_gyro')
 
 m_esq = ev3.LargeMotor(pino_motor_esquerda)					
 m_dir = ev3.LargeMotor(pino_motor_direita)					
@@ -42,6 +42,8 @@ m_dir = ev3.LargeMotor(pino_motor_direita)
 
 ir = ev3.InfraredSensor(pino_if)
 ir.mode = 'IR-PROX'
+
+btn = Button()
 
 def anda(velocidade, direcao):
     if direcao > 0:

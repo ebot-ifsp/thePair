@@ -48,22 +48,26 @@ class Arduino():
     def calibrar(self):
         self.buss.read_i2c_block_data(self.address, 4, self.tamanho)
 
-    def sensores(self):
+    def sensores(self, Sensores=None):
         resposta = []
-        Sensores = self.le_todos()
+        if not Sensores:
+            Sensores = self.le_todos()
         for sensor in Sensores:
             resposta.append(sensor > self.limiar)
         return resposta
 
-    def quantidade(self, Sensores):
+    def quantidade(self, Sensores=None):
         q = 0
+        if not Sensores:
+            Sensores = self.sensores()
         for sensor in Sensores:
             if sensor != 0:
                 q += 1
         return q
 
-    def pos_linha(self):
-        Sensores = self.le_todos()
+    def pos_linha(self, Sensores=None):
+        if not Sensores:
+            Sensores = self.le_todos()
         resposta_sup, resposta_inf = 0, 0
         for i, sensor in enumerate(Sensores):
             if sensor > self.limiar:

@@ -5,13 +5,13 @@ from movimento import *
 from sensores import *
 
 def sensoresEsquerda(s):
-    return s[1] or s[2]
+    return s[0] or s[1] or s[2]
 
 def sensoresMeio(s):
     return s[3] or s[4]
 
 def sensoresDireita(s):
-    return s[5] or s[6]
+    return s[5] or s[6] or s[7]
 
 def voltar():
     gira_angulo(volta_gira)
@@ -20,38 +20,22 @@ def voltar():
     while not sensoresMeio(sensores):
         sensores = ard.sensores()
         time.sleep(0.01)
+        if 'left' in btn.buttons_pressed:
+            break
     estado = 1
     anda(v_reta, 0)
 
-def segue_linha(sensores,estado):
-    if estado == 1:
-        if not sensoresEsquerda(sensores) and not sensoresDireita(sensores):
-            anda(v_reta, 0)
-            return 1
-        if sensoresDireita(sensores):
-            gira('direita')
-            return 2
-        if sensoresEsquerda(sensores):
-            gira('esquerda')
-            return 3
-    if estado == 2:
-        if sensoresMeio(sensores):
-            anda(v_reta,0)
-            return 1
-        gira('direita')
-        return 2
-    if estado == 3:
-        if sensoresMeio(sensores):
-            anda(v_reta,0)
-            return 1
-        gira('esquerda')
-        return 3
-
 def curva_alinhar(lado, andar=7):
     anda_posicao(andar)
+    if lado == 'direita':
+        gira_angulo(30)
+    else:
+        gira_angulo(-30)
     gira(lado, v_gira/2)                        # continua girando
     while not sensoresMeio(ard.sensores()):     # ate linha chegar nomeio do
-        time.sleep(0.1)
+        if 'left' in btn.buttons_pressed:
+            break
+        time.sleep(0.05)
 
 def desvia_bloco():
     alinhar()
@@ -62,8 +46,10 @@ def desvia_bloco():
     anda(v_reta, -40)
     while not sensoresMeio(ard.sensores()):
         time.sleep(0.05)
-    print('parar')
+        if 'left' in btn.buttons_pressed:
+            break
     parar()
+    curva_alinhar('direita')
 
 def alinhar():
     pos = ard.pos_linha()
@@ -75,13 +61,15 @@ def alinhar():
         print('aqui')
         while pos > 4600:
             pos = ard.pos_linha()
-            print(pos, 'dir-while')
+            if 'left' in btn.buttons_pressed:
+                break
     elif pos < 4300:
         print(pos, 'esq')
         m_esq.run_forever(speed_sp=-150)
         m_dir.run_forever(speed_sp=150)
         while pos < 4600:
             pos = ard.pos_linha()
-            print(pos, 'esq-while')
+            if 'left' in btn.buttons_pressed:
+                break
     print('fim alinhar', pos)
     parar()
