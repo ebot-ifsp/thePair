@@ -29,8 +29,10 @@ volta_lado = cfg.get('curvaVerde', 'volta_lado')
 
 pino_motor_esquerda = cfg.get('pinos', 'pino_motor_esquerda')
 pino_motor_direita = cfg.get('pinos', 'pino_motor_direita')
-# pino_gyro = cfg.get('pinos', 'pino_gyro')
 pino_if = cfg.get('pinos', 'pino_if')
+pino_corE = cfg.get('pinos', 'pino_corE')
+pino_corD = cfg.get('pinos', 'pino_corD')
+# pino_gyro = cfg.get('pinos', 'pino_gyro')
 
 m_esq = ev3.LargeMotor(pino_motor_esquerda)					
 m_dir = ev3.LargeMotor(pino_motor_direita)					
@@ -90,11 +92,15 @@ def hold_on(time_out=20):
 def parar():
     m_esq.stop()
     m_dir.stop()
-        
-        
-        
-        
-        
+
+def viu_verde(r, g, b):
+    lim_inf = 25
+    lim_sup = 80
+    prop = 1.5
+    if (r < lim_sup and g < lim_sup and g > lim_inf):
+        if g > r*prop:
+            return True
+    return False        
         
         
         

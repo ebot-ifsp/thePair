@@ -6,8 +6,16 @@ http://wiki.erazor-zone.de/wiki:linux:python:smbus:doc
 
 '''
 import sys, os
-from movimento import limiar_if
 from smbus import SMBus
+import ev3dev.ev3 as ev3
+from movimento import *
+
+btn = ev3.Button()
+
+corE = ev3.ColorSensor(pino_corE)
+corD = ev3.ColorSensor(pino_corD)
+corE.mode = 'RGB-RAW'
+corD.mode = 'RGB-RAW'
 
 class Arduino():
     def __init__(self):
@@ -47,17 +55,23 @@ class Arduino():
             resposta.append(sensor > self.limiar)
         return resposta
 
-    def posicao(self, sensores):
-        acom_inf = 0.0
-        acom_sup = 0.0
-        for indice, sensor in enumerate(sensores):
-            acom_inf += sensor
-            acom_sup += indice*1000*sensor
-        return float(acom_sup/acom_inf)
-
     def quantidade(self, Sensores):
         q = 0
         for sensor in Sensores:
             if sensor != 0:
                 q += 1
         return q
+
+    def pos_linha(self):
+        Sensores = self.le_todos()
+        resposta_sup, resposta_inf = 0, 0
+        for i, sensor in enumerate(Sensores):
+            if sensor > self.limiar:
+                resposta_sup += 1000*(i+1)*sensor
+                resposta_inf += sensor
+        if resposta_inf > 0:
+            return resposta_sup/resposta_inf
+        else:
+            return 0
+
+ard = Arduino()

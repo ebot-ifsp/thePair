@@ -2,8 +2,7 @@
 import ev3dev.ev3 as ev3
 import time
 from movimento import *
-from arduino import *
-from navegador import ard
+from sensores import *
 
 def sensoresEsquerda(s):
     return s[1] or s[2]
@@ -48,14 +47,14 @@ def segue_linha(sensores,estado):
         gira('esquerda')
         return 3
 
-def curva_alinhar(lado):
-    anda_posicao(20)
+def curva_alinhar(lado, andar=7):
+    anda_posicao(andar)
     gira(lado, v_gira/2)                        # continua girando
     while not sensoresMeio(ard.sensores()):     # ate linha chegar nomeio do
         time.sleep(0.1)
 
 def desvia_bloco():
-    # alinhar
+    alinhar()
     gira_angulo(90)
     time.sleep(0.1)
     parar()
@@ -65,13 +64,24 @@ def desvia_bloco():
         time.sleep(0.05)
     print('parar')
     parar()
-    # gira_angulo(90)
-    # anda_posicao(bloco_anda1)
-    # gira_angulo(-90)
-    # anda_posicao(bloco_anda2)
-    # gira_angulo(-90)
-    # anda(v_reta/2, 0)
-    # while not sensoresMeio(ard.sensores()):
-    #     time.sleep(0.05)
-    # parar()
-    # curva_alinhar('direita')
+
+def alinhar():
+    pos = ard.pos_linha()
+    print('alinhas', pos)
+    if pos > 4700:
+        print(pos, 'dir')
+        m_esq.run_forever(speed_sp=150)
+        m_dir.run_forever(speed_sp=-150)
+        print('aqui')
+        while pos > 4600:
+            pos = ard.pos_linha()
+            print(pos, 'dir-while')
+    elif pos < 4300:
+        print(pos, 'esq')
+        m_esq.run_forever(speed_sp=-150)
+        m_dir.run_forever(speed_sp=150)
+        while pos < 4600:
+            pos = ard.pos_linha()
+            print(pos, 'esq-while')
+    print('fim alinhar', pos)
+    parar()
