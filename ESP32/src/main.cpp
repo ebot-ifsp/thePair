@@ -3,15 +3,15 @@
 #include <ESP32Servo.h>
 //#include <sensorlinha.h>
 
-#define NUM_SENSORES   8      // numero de sensores usados
-#define TIMEOUT        2500   // 2500 microseconds para saida ir para LOW
-#define IF_EMISSOR     15      // Pino para controlar o emissor
+#define NUM_SENSORES   8        // numero de sensores usados
+#define TIMEOUT        2500     // 2500 microseconds para saida ir para LOW
+#define IF_EMISSOR     15       // Pino para controlar o emissor
 
-#define PIN_SERVO_1    18
-#define PIN_SERVO_2    19
+#define PIN_SERVO_A    21       // Pino do servo A
+#define PIN_SERVO_B    21       // Pino do servo B
 
 QTRSensorsRC qtrrc((unsigned char[]) {
-                    12, 13, 14, 25, 26, 27, 16, 17}, 
+                    13, 12, 14, 27, 26, 25, 33, 32}, 
                     NUM_SENSORES, TIMEOUT, IF_EMISSOR);
 
 unsigned int valorSensores[NUM_SENSORES];     // Vetor para guardar o resultado das leituras
@@ -24,8 +24,8 @@ String QTR = "00110000-3.1345";
 String cor1 = "2,255,120"; 
 String cor2 = "255,255,0"; 
 
-Servo servo1;
-Servo servo2;
+Servo servoA;
+Servo servoB;
 
 void calibrar()
 {
@@ -95,10 +95,10 @@ void setup()
 {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
-  servo1.setPeriodHertz(50);    // TODO - verificar frequencia do servo SG90
-  servo2.setPeriodHertz(50);
-  servo1.attach(PIN_SERVO_1, 500, 2400);
-  servo2.attach(PIN_SERVO_2, 500, 2400);
+  servoA.setPeriodHertz(50);    // TODO - verificar frequencia do servo SG90
+  servoB.setPeriodHertz(50);
+  servoA.attach(PIN_SERVO_A, 500, 2400);
+  servoB.attach(PIN_SERVO_B, 500, 2400);
   calibrar();
 }
 
@@ -128,32 +128,30 @@ void loop()
         int valor = buff.toInt();
         switch (valor)
         {
-          case 0:
+          case 0: // Desativa o envio automático
             envio_automatico = false;
             break;
-          case 1:
+          case 1: // Ativa o envio automático
             envio_automatico = true;
             break;
-          case 2: // 2 - Qrcode-raw
+          case 2: // Pede leitura do Qrcode no modo raw
             leitura_qtr(true);
             qtr_to_String(true);
             Serial.println(QTR);
             break;
-          case 3: // 3 - Qrcode-calibrado
+          case 3: // Pede leitura do Qrcode no modo calibrado
             leitura_qtr();
             qtr_to_String();
             Serial.println(QTR);
             break;
-          case 4: // 4 - Calibrar
+          case 4: // Realiza calibração do sensor de linha
             calibrar();
             break;
-          case 5: // 5 - leitura cor1
-            cor1 = "2,255,120";
-            Serial.println(cor1);
+          case 5: // Leitura do sonar 1
+            Serial.println("Sonar 1");
             break;
-          case 6: // 6 - leitura cor1
-            cor2 = "255,255,0";
-            Serial.println(cor2);
+          case 6: // Leitura do sonar 2
+            Serial.println("Sonar 1");
             break;
           default:
             break;
