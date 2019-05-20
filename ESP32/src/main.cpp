@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <QTRSensors.h>
 #include <ESP32Servo.h>
-//#include <sensorlinha.h>
 
 #define NUM_SENSORES   8        // numero de sensores usados
 #define TIMEOUT        2500     // 2500 microseconds para saida ir para LOW
@@ -9,6 +8,8 @@
 
 #define PIN_SERVO_A    21       // Pino do servo A
 #define PIN_SERVO_B    21       // Pino do servo B
+
+// Definir os pinos do sonar (trigger e echo)
 
 QTRSensorsRC qtrrc((unsigned char[]) {
                     13, 12, 14, 27, 26, 25, 33, 32}, 
@@ -21,8 +22,6 @@ bool envio_automatico = false;
 String buff = "";
 
 String QTR = "00110000-3.1345";
-String cor1 = "2,255,120"; 
-String cor2 = "255,255,0"; 
 
 Servo servoA;
 Servo servoB;
@@ -85,8 +84,8 @@ modos:
   2 - Qrcode-raw
   3 - Qrcode-calibrado
   4 - calibar
-  5 - leitura senror cor1
-  6 - leitura sensor cor2
+  5 - leitura sonar1
+  6 - leitura sonar2
   s1-xyz - move posicao do servo1 para inteiro xyz
   s2-xyz - move posicao do servo2 para inteiro xyz
 */
@@ -108,10 +107,9 @@ void loop()
   {
     leitura_qtr(true);
     qtr_to_String(true);
-    // ler cor1
-    // ler cor2
+    // ler os sonares
     // converter ambas para string
-    Serial.println(QTR + "," + cor1 + "," + cor2);
+    Serial.println(QTR + "," + "Leirutra sonares");
     delay(50);
   }
   if ( Serial.available() > 0)
@@ -157,20 +155,20 @@ void loop()
             break;
         }
       }
-      else if ( buff.startsWith("S1") >= 0 )
+      else if ( buff.startsWith("SA") >= 0 )
       { 
         buff.remove(0, 2);
         int posicao_servo = buff.toInt();
         Serial.print("movendo servo 1 para: ");
         Serial.println(posicao_servo);
-        servo1.write(posicao_servo);
+        servoA.write(posicao_servo);
       }
-      else if ( buff.startsWith("S2") >= 0 )
+      else if ( buff.startsWith("SB") >= 0 )
       {
         int posicao_servo = buff.toInt();
         Serial.print("movendo servo 2 para: ");
         Serial.println(posicao_servo);
-        servo2.write(posicao_servo);
+        servoB.write(posicao_servo);
       }
       buff = "";
     }
