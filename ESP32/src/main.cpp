@@ -31,7 +31,7 @@ void calibrar()
   bool estado = false;
   int contador = 0;
   Serial.println("Calibrando");
-  for (int i = 0; i < 400; i++)  // make the calibration take about 10 seconds
+  for (int i = 0; i < 40; i++)  // make the calibration take about 10 seconds
   {
     qtrrc.calibrate();            // reads all sensors 10 times at 2500 us per read (i.e. ~25 ms per call)
     if (contador % 10 == 0 )
@@ -121,6 +121,15 @@ void loop()
     }
     else
     {
+      if (buff.charAt(buff.length()-1) == '\r')
+      {
+        Serial.println("aqui");
+        buff.remove(buff.length()-1);
+      }
+      Serial.println("debug");
+      Serial.println(buff);
+      Serial.println(buff.length());
+      Serial.println("fim debug");
       if ( buff.length() == 1)
       {
         int valor = buff.toInt();
@@ -154,16 +163,14 @@ void loop()
           default:
             break;
         }
-      }
-      else if ( buff.startsWith("SA") >= 0 )
+      } else if ( buff.startsWith("SA") )
       { 
         buff.remove(0, 2);
         int posicao_servo = buff.toInt();
         Serial.print("movendo servo 1 para: ");
         Serial.println(posicao_servo);
         servoA.write(posicao_servo);
-      }
-      else if ( buff.startsWith("SB") >= 0 )
+      } else if ( buff.startsWith("SB") >= 0 )
       {
         int posicao_servo = buff.toInt();
         Serial.print("movendo servo 2 para: ");
