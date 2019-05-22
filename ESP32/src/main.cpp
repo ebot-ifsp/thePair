@@ -41,7 +41,6 @@ void calibrar()
     }
     contador++;
   }
-  Serial.println("Calibrado");
 }
 
 void leitura_qtr(bool raw = false)
@@ -58,7 +57,7 @@ void leitura_qtr(bool raw = false)
 
 void qtr_to_String(bool raw = false)
 {
-  QTR = "";
+  QTR = "I";
   if ( raw )
   {
     for (int i=0; i<NUM_SENSORES; i++)
@@ -123,13 +122,8 @@ void loop()
     {
       if (buff.charAt(buff.length()-1) == '\r')
       {
-        Serial.println("aqui");
         buff.remove(buff.length()-1);
       }
-      Serial.println("debug");
-      Serial.println(buff);
-      Serial.println(buff.length());
-      Serial.println("fim debug");
       if ( buff.length() == 1)
       {
         int valor = buff.toInt();
